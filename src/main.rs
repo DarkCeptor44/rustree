@@ -36,6 +36,9 @@ struct App {
         default_value = "blue"
     )]
     color: String,
+
+    #[arg(short = 'l', long, help = "Show file sizes", default_value_t)]
+    show_sizes: bool,
 }
 
 fn main() {
@@ -52,6 +55,7 @@ fn main_impl() -> Result<()> {
         all,
         ascii,
         color,
+        show_sizes,
     } = args;
 
     if !root_path.is_dir() {
@@ -81,6 +85,6 @@ fn main_impl() -> Result<()> {
         insert_entry(&mut root_map, &root_path, &entry);
     }
 
-    render_tree(&root_path, &root_map, ascii, &color);
+    render_tree(&root_path, &root_map, ascii, &color, show_sizes);
     Ok(())
 }

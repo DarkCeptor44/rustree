@@ -1,30 +1,24 @@
 use ignore::DirEntry;
 use std::{
     collections::BTreeMap,
-    path::{Component, Path, PathBuf},
+    path::{Component, Path},
 };
 
 #[derive(Debug)]
 pub enum Node {
-    File {
-        path: PathBuf,
-    },
-    Directory {
-        path: PathBuf,
-        children: BTreeMap<String, Node>,
-    },
+    File { size: Option<u64> },
+    Directory { children: BTreeMap<String, Node> },
 }
 
 impl Node {
-    pub fn new_dir(path: PathBuf) -> Self {
+    pub fn new_dir() -> Self {
         Self::Directory {
-            path,
             children: BTreeMap::new(),
         }
     }
 
-    pub fn new_file(path: PathBuf) -> Self {
-        Self::File { path }
+    pub fn new_file(size: Option<u64>) -> Self {
+        Self::File { size }
     }
 }
 
@@ -51,6 +45,9 @@ pub fn insert_entry(root: &mut BTreeMap<String, Node>, root_path: &Path, entry: 
     }
 
     let is_dir = entry.file_type().is_some_and(|ft| ft.is_dir());
+    let size = entry
+        .metadata()
+        .map_or(None, |m| if m.is_file() { Some(m.len()) } else { None });
     let mut current_map = root;
 
     for (i, component) in components.iter().enumerate() {
@@ -59,14 +56,14 @@ pub fn insert_entry(root: &mut BTreeMap<String, Node>, root_path: &Path, entry: 
             if is_dir {
                 current_map
                     .entry(component.clone())
-                    .or_insert_with(|| Node::new_dir(path.to_path_buf()));
+                    .or_insert_with(Node::new_dir);
             } else {
-                current_map.insert(component.clone(), Node::new_file(path.to_path_buf()));
+                current_map.insert(component.clone(), Node::new_file(size));
             }
         } else {
             let node = current_map
                 .entry(component.clone())
-                .or_insert_with(|| Node::new_dir(path.parent().unwrap().to_path_buf()));
+                .or_insert_with(Node::new_dir);
 
             if let Node::Directory { children, .. } = node {
                 current_map = children;
