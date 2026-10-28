@@ -1,8 +1,9 @@
 [package]
 name = "rustree"
 version = "0.1.0"
+description = "A Rust implementation of the tree command"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.88"
 
 [dependencies]
 anyhow = "1.0.104"
