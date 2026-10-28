@@ -11,8 +11,7 @@ use crate::{
 use anyhow::{Result, anyhow};
 use clap::Parser;
 use colored::Colorize;
-use crossbeam::channel::bounded;
-use ignore::{WalkBuilder, WalkState};
+use ignore::WalkBuilder;
 use std::{collections::BTreeMap, path::PathBuf, process::exit};
 
 const NAME: &str = env!("CARGO_BIN_NAME");
@@ -62,26 +61,13 @@ fn main_impl() -> Result<()> {
         return Err(anyhow!("path is not a directory: {}", root_path.display()));
     }
 
+    let mut root_map: BTreeMap<String, Node> = BTreeMap::new();
     let walker = WalkBuilder::new(&root_path)
         .git_ignore(!all)
         .ignore(!all)
-        .build_parallel();
-    let (tx, rx) = bounded(100);
+        .build();
 
-    walker.run(|| {
-        let tx = tx.clone();
-        Box::new(move |result| {
-            if let Ok(entry) = result {
-                let _ = tx.send(entry);
-            }
-            WalkState::Continue
-        })
-    });
-
-    drop(tx);
-
-    let mut root_map: BTreeMap<String, Node> = BTreeMap::new();
-    for entry in rx {
+    for entry in walker.flatten() {
         insert_entry(&mut root_map, &root_path, &entry);
     }
 
