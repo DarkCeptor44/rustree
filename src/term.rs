@@ -1,6 +1,10 @@
 use crate::tree::Node;
 use colored::Colorize;
-use std::{collections::BTreeMap, path::Path};
+use std::{
+    collections::BTreeMap,
+    io::{BufWriter, Write},
+    path::Path,
+};
 
 pub const ASCII_STYLE: TreeStyle = TreeStyle {
     tee: "|-- ",
@@ -24,13 +28,16 @@ pub struct TreeStyle {
 }
 
 impl TreeStyle {
-    pub fn print_tree(
+    pub fn print_tree<W>(
         &self,
+        writer: &mut W,
         children: &BTreeMap<String, Node>,
         prefix: &str,
         color: &str,
         show_size: bool,
-    ) {
+    ) where
+        W: Write,
+    {
         let count = children.len();
         for (i, (name, node)) in children.iter().enumerate() {
             let is_last = i == count - 1;
@@ -45,18 +52,18 @@ impl TreeStyle {
                     && let Some(size) = size
                 {
                     let size_str = format!(" ({})", human_bytes(*size)).dimmed();
-                    println!("{prefix}{connector}{display_name}{size_str}");
+                    let _ = writeln!(writer, "{prefix}{connector}{display_name}{size_str}");
                 } else {
-                    println!("{prefix}{connector}{display_name}");
+                    let _ = writeln!(writer, "{prefix}{connector}{display_name}");
                 }
             } else {
-                println!("{prefix}{connector}{display_name}");
+                let _ = writeln!(writer, "{prefix}{connector}{display_name}");
             }
 
             if let Node::Directory { children, .. } = node {
                 let extension = if is_last { self.space } else { self.vertical };
                 let new_prefix = format!("{prefix}{extension}");
-                self.print_tree(children, &new_prefix, color, show_size);
+                self.print_tree(writer, children, &new_prefix, color, show_size);
             }
         }
     }
@@ -95,6 +102,9 @@ pub fn render_tree(
         .and_then(|n| n.to_str())
         .unwrap_or(".");
 
-    println!("{}", root_name.bold().color(color));
-    style.print_tree(root_map, "", color, show_size);
+    let stdout = std::io::stdout();
+    let mut writer = BufWriter::new(stdout.lock());
+
+    let _ = writeln!(writer, "{}", root_name.bold().color(color));
+    style.print_tree(&mut writer, root_map, "", color, show_size);
 }

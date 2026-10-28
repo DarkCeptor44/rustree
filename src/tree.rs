@@ -1,6 +1,7 @@
 use ignore::DirEntry;
 use std::{
     collections::BTreeMap,
+    fs::Metadata,
     path::{Component, Path},
 };
 
@@ -22,7 +23,12 @@ impl Node {
     }
 }
 
-pub fn insert_entry(root: &mut BTreeMap<String, Node>, root_path: &Path, entry: &DirEntry) {
+pub fn insert_entry(
+    root: &mut BTreeMap<String, Node>,
+    root_path: &Path,
+    entry: &DirEntry,
+    calculate_size: bool,
+) {
     let path = entry.path();
     if path == root_path {
         return;
@@ -44,9 +50,15 @@ pub fn insert_entry(root: &mut BTreeMap<String, Node>, root_path: &Path, entry: 
     }
 
     let is_dir = entry.file_type().is_some_and(|ft| ft.is_dir());
-    let size = entry
-        .metadata()
-        .map_or(None, |m| if m.is_file() { Some(m.len()) } else { None });
+    let size = if calculate_size {
+        entry
+            .metadata()
+            .ok()
+            .filter(Metadata::is_file)
+            .map(|m| m.len())
+    } else {
+        None
+    };
     let mut current_map = root;
 
     for (i, component) in components.iter().enumerate() {

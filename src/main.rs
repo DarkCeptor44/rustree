@@ -68,7 +68,7 @@ fn main_impl() -> Result<()> {
         .build();
 
     for entry in walker.flatten() {
-        insert_entry(&mut root_map, &root_path, &entry);
+        insert_entry(&mut root_map, &root_path, &entry, show_sizes);
     }
 
     render_tree(&root_path, &root_map, ascii, &color, show_sizes);
