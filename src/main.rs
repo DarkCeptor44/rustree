@@ -18,6 +18,9 @@ const NAME: &str = env!("CARGO_BIN_NAME");
 struct App {
     #[arg(help = "Root path", default_value = ".")]
     path: PathBuf,
+
+    #[arg(short, long, help = "Show all entries", default_value_t)]
+    all: bool,
 }
 
 fn main() {
@@ -29,15 +32,18 @@ fn main() {
 
 fn main_impl() -> Result<()> {
     let args = App::parse();
-    let App { path: root_path } = args;
+    let App {
+        path: root_path,
+        all,
+    } = args;
 
     if !root_path.is_dir() {
         return Err(anyhow!("path is not a directory: {}", root_path.display()));
     }
 
     let walker = WalkBuilder::new(&root_path)
-        .git_ignore(true)
-        .ignore(true)
+        .git_ignore(!all)
+        .ignore(!all)
         .build_parallel();
     let (tx, rx) = bounded(100);
 
