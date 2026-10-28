@@ -65,6 +65,7 @@ impl TreeStyle {
 fn human_bytes(bytes: u64) -> String {
     const UNITS: &[&str] = &["B", "KB", "MB", "GB", "TB"];
 
+    #[allow(clippy::cast_precision_loss)]
     let mut bytes = bytes as f64;
     let mut idx = 0;
 
@@ -73,7 +74,7 @@ fn human_bytes(bytes: u64) -> String {
         idx += 1;
     }
 
-    let n = if idx == 0 { 0 } else { 1 };
+    let n = usize::from(idx != 0);
     format!("{bytes:.n$} {}", UNITS[idx])
 }
 

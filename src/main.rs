@@ -1,5 +1,5 @@
 #![forbid(unsafe_code)]
-// #![warn(clippy::pedantic, missing_debug_implementations)]
+#![warn(clippy::pedantic, missing_debug_implementations)]
 
 mod term;
 mod tree;

@@ -28,9 +28,8 @@ pub fn insert_entry(root: &mut BTreeMap<String, Node>, root_path: &Path, entry: 
         return;
     }
 
-    let relative = match path.strip_prefix(root_path) {
-        Ok(rel) => rel,
-        Err(_) => return,
+    let Ok(relative) = path.strip_prefix(root_path) else {
+        return;
     };
 
     let components: Vec<String> = relative
