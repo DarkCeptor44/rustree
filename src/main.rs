@@ -1,9 +1,13 @@
 #![forbid(unsafe_code)]
 // #![warn(clippy::pedantic, missing_debug_implementations)]
 
+mod term;
 mod tree;
 
-use crate::tree::{Node, insert_entry};
+use crate::{
+    term::render_tree,
+    tree::{Node, insert_entry},
+};
 use anyhow::{Result, anyhow};
 use clap::Parser;
 use colored::Colorize;
@@ -21,6 +25,9 @@ struct App {
 
     #[arg(short, long, help = "Show all entries", default_value_t)]
     all: bool,
+
+    #[arg(short = 'A', long, help = "Use ASCII characters", default_value_t)]
+    ascii: bool,
 }
 
 fn main() {
@@ -35,6 +42,7 @@ fn main_impl() -> Result<()> {
     let App {
         path: root_path,
         all,
+        ascii,
     } = args;
 
     if !root_path.is_dir() {
@@ -64,9 +72,6 @@ fn main_impl() -> Result<()> {
         insert_entry(&mut root_map, &root_path, &entry);
     }
 
-    for name in root_map.keys() {
-        println!("{name}");
-    }
-
+    render_tree(&root_path, &root_map, ascii);
     Ok(())
 }
