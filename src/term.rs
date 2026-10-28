@@ -1,4 +1,5 @@
 use crate::tree::Node;
+use colored::Colorize;
 use std::{collections::BTreeMap, path::Path};
 
 pub const ASCII_STYLE: TreeStyle = TreeStyle {
@@ -23,24 +24,33 @@ pub struct TreeStyle {
 }
 
 impl TreeStyle {
-    pub fn print_tree(&self, children: &BTreeMap<String, Node>, prefix: &str) {
+    pub fn print_tree(&self, children: &BTreeMap<String, Node>, prefix: &str, color: &str) {
         let count = children.len();
         for (i, (name, node)) in children.iter().enumerate() {
             let is_last = i == count - 1;
             let connector = if is_last { self.last } else { self.tee };
+            let display_name = match node {
+                Node::Directory { .. } => name.bold().color(color),
+                Node::File { .. } => name.normal(),
+            };
 
-            println!("{prefix}{connector}{name}");
+            println!("{prefix}{connector}{display_name}");
 
             if let Node::Directory { children, .. } = node {
                 let extension = if is_last { self.space } else { self.vertical };
                 let new_prefix = format!("{prefix}{extension}");
-                self.print_tree(children, &new_prefix);
+                self.print_tree(children, &new_prefix, color);
             }
         }
     }
 }
 
-pub fn render_tree(root_path: &Path, root_map: &BTreeMap<String, Node>, use_ascii: bool) {
+pub fn render_tree(
+    root_path: &Path,
+    root_map: &BTreeMap<String, Node>,
+    use_ascii: bool,
+    color: &str,
+) {
     let style = if use_ascii {
         ASCII_STYLE
     } else {
@@ -51,6 +61,6 @@ pub fn render_tree(root_path: &Path, root_map: &BTreeMap<String, Node>, use_asci
         .and_then(|n| n.to_str())
         .unwrap_or(".");
 
-    println!("{root_name}");
-    style.print_tree(root_map, "");
+    println!("{}", root_name.bold().color(color));
+    style.print_tree(root_map, "", color);
 }

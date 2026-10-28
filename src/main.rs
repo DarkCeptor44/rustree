@@ -28,6 +28,14 @@ struct App {
 
     #[arg(short = 'A', long, help = "Use ASCII characters", default_value_t)]
     ascii: bool,
+
+    #[arg(
+        short,
+        long,
+        help = "Color to use for directory names (`off` and hexcode like `#ff4500` both work as well)",
+        default_value = "blue"
+    )]
+    color: String,
 }
 
 fn main() {
@@ -43,6 +51,7 @@ fn main_impl() -> Result<()> {
         path: root_path,
         all,
         ascii,
+        color,
     } = args;
 
     if !root_path.is_dir() {
@@ -72,6 +81,6 @@ fn main_impl() -> Result<()> {
         insert_entry(&mut root_map, &root_path, &entry);
     }
 
-    render_tree(&root_path, &root_map, ascii);
+    render_tree(&root_path, &root_map, ascii, &color);
     Ok(())
 }
