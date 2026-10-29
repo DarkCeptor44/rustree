@@ -4,6 +4,11 @@ version = "0.1.0"
 description = "A Rust implementation of the tree command"
 edition = "2024"
 rust-version = "1.95"
+repository = "https://github.com/DarkCeptor44/rustree"
+authors = ["DarkCeptor44"]
+license = "MPL-2.0"
+keywords = ["alternative", "tree"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 clap = { version = "4.6.7", features = ["derive"], optional = true }
