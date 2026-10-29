@@ -126,6 +126,13 @@ pub(crate) fn worker_loop(
         let mut subdirs = Vec::new();
 
         for entry in entries.flatten() {
+            if respect_gitignore {
+                let name = entry.file_name();
+                if name == ".git" || name == ".gitignore" {
+                    continue;
+                }
+            }
+
             let p = entry.path();
             let file_type = entry.to_file_type();
             let is_dir = file_type.is_some_and(|ft| matches!(ft, FileType::Dir));

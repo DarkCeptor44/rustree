@@ -135,6 +135,7 @@ impl Walker {
     /// ## Returns
     ///
     /// A vector of directory entries
+    #[allow(clippy::too_many_lines)]
     pub fn walk(&self) -> Vec<DirEntry> {
         let root_path = &self.root;
         let root_gitignore = root_path.join(".gitignore");
@@ -203,6 +204,13 @@ impl Walker {
             let mut subdirs = Vec::new();
 
             for entry in entries.flatten() {
+                if respect_gitignore {
+                    let name = entry.file_name();
+                    if name == ".git" || name == ".gitignore" {
+                        continue;
+                    }
+                }
+
                 let p = entry.path();
                 let file_type = entry.to_file_type();
                 let is_dir = file_type.is_some_and(|ft| matches!(ft, FileType::Dir));
