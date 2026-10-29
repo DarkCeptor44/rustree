@@ -204,7 +204,8 @@ impl Walker {
 
             for entry in entries.flatten() {
                 let p = entry.path();
-                let is_dir = entry.file_type().is_ok_and(|ft| ft.is_dir());
+                let file_type = entry.to_file_type();
+                let is_dir = file_type.is_some_and(|ft| matches!(ft, FileType::Dir));
 
                 let mut ignored = false;
                 if respect_gitignore {
@@ -223,7 +224,7 @@ impl Walker {
                 if is_dir {
                     subdirs.push(p);
                 } else {
-                    local_results.push(DirEntry::new(p));
+                    local_results.push(DirEntry { path: p, file_type });
                 }
             }
 
@@ -254,6 +255,27 @@ impl Walker {
         match Arc::try_unwrap(results) {
             Ok(mutex) => mutex.into_inner(),
             Err(arc) => arc.lock().clone(),
+        }
+    }
+}
+
+/// Trait for converting a [`std::fs::DirEntry`] to a [`FileType`]
+pub trait ToFileType {
+    /// Converts a [`std::fs::DirEntry`] to a [`FileType`]
+    ///
+    /// ## Returns
+    ///
+    /// An [Option] of [`FileType`]
+    fn to_file_type(&self) -> Option<FileType>;
+}
+
+impl ToFileType for std::fs::DirEntry {
+    fn to_file_type(&self) -> Option<FileType> {
+        match self.file_type() {
+            Ok(ft) if ft.is_dir() => Some(FileType::Dir),
+            Ok(ft) if ft.is_file() => Some(FileType::File),
+            Ok(ft) if ft.is_symlink() => Some(FileType::Symlink),
+            _ => None,
         }
     }
 }

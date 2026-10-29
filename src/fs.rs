@@ -1,3 +1,4 @@
+use crate::ToFileType;
 use ignore::gitignore::{Gitignore, GitignoreBuilder};
 use parking_lot::Mutex;
 use std::{
@@ -126,7 +127,8 @@ pub(crate) fn worker_loop(
 
         for entry in entries.flatten() {
             let p = entry.path();
-            let is_dir = entry.file_type().is_ok_and(|ft| ft.is_dir());
+            let file_type = entry.to_file_type();
+            let is_dir = file_type.is_some_and(|ft| matches!(ft, FileType::Dir));
 
             let mut ignored = false;
             if respect_gitignore {
@@ -145,7 +147,7 @@ pub(crate) fn worker_loop(
             if is_dir {
                 subdirs.push(p);
             } else {
-                local_results.push(DirEntry::new(p));
+                local_results.push(DirEntry { path: p, file_type });
             }
         }
 
