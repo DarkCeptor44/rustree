@@ -2,20 +2,38 @@
 
 A Rust implementation of the `tree` command-line utility. It's not blazingly fast (yet), but at least it respects `.gitignore` files by default.
 
+![usage](./assets/usage.png)
+
 ## Installation
 
-For the CLI:
+### CLI
 
 ```bash
-cargo install rustree
+cargo install --git https://github.com/DarkCeptor44/rustree
 ```
 
-For the library:
+Or grab a binary from [releases](https://github.com/DarkCeptor44/rustree/releases).
+
+### Library
+
+```bash
+cargo add --git https://github.com/DarkCeptor44/rustree --no-default-features
+```
+
+Or:
 
 ```toml
 [dependencies]
-rustree = { version = "0.1.0", default-features = false }
+rustree = { version = "0.1.0", git = "https://github.com/DarkCeptor44/rustree", default-features = false }
 ```
+
+## MSRV
+
+The minimum supported Rust version is:
+
+| Version | Edition | MSRV |
+| --- | --- | --- |
+| `<= 0.1.0` | 2024 | 1.95.0 |
 
 ## Usage Example
 
@@ -91,3 +109,13 @@ fs               fastest       │ slowest       │ median        │ mean     
    ╰─ 10000      107.8 ms      │ 151.4 ms      │ 118.6 ms      │ 119.8 ms      │ 100     │ 100
                  92.74 Kitem/s │ 66.01 Kitem/s │ 84.29 Kitem/s │ 83.4 Kitem/s  │         │
 ```
+
+## Audits
+
+| Auditor | Audit Date | Version | Vulnerabilities |
+| --- | --- | --- | --- |
+| [cargo-audit](https://crates.io/crates/cargo-audit) | 2026-10-29 | 0.1.0 | 0 |
+
+## License
+
+This project is licensed under the [Mozilla Public License, version 2.0](https://www.mozilla.org/en-US/MPL/2.0/). See the [LICENSE](./LICENSE) file for details.

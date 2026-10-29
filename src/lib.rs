@@ -1,9 +1,21 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 #![forbid(unsafe_code)]
 #![warn(clippy::pedantic, missing_debug_implementations, missing_docs)]
 
 //! # rustree
 //!
-//! A Rust implementation of the `tree` command-line utility.
+//! A Rust implementation of the `tree` command-line utility. It respects `.gitignore` files by default.
+//!
+//! ## MSRV
+//!
+//! The minimum supported Rust version is:
+//!
+//! | Version | Edition | MSRV |
+//! | --- | --- | --- |
+//! | `<= 0.1.0` | 2024 | 1.95.0 |
 //!
 //! ## Usage Example
 //!
@@ -27,6 +39,32 @@
 //!
 //! render_tree(root, &root_map, false, "blue", true);
 //! ```
+//!
+//! ## Benchmarks
+//!  
+//! ```text
+//! Timer precision: 100 ns
+//! fs               fastest       │ slowest       │ median        │ mean          │ samples │ iters
+//! ╰─ Walker::walk                │               │               │               │         │
+//!    ├─ 100        2.933 ms      │ 4.09 ms       │ 3.063 ms      │ 3.16 ms       │ 100     │ 100
+//!    │             34.09 Kitem/s │ 24.44 Kitem/s │ 32.64 Kitem/s │ 31.63 Kitem/s │         │
+//!    ├─ 500        12.93 ms      │ 16.16 ms      │ 13.64 ms      │ 13.94 ms      │ 100     │ 100
+//!    │             38.65 Kitem/s │ 30.93 Kitem/s │ 36.63 Kitem/s │ 35.84 Kitem/s │         │
+//!    ├─ 1000       18.97 ms      │ 23.9 ms       │ 19.88 ms      │ 20.06 ms      │ 100     │ 100
+//!    │             52.7 Kitem/s  │ 41.82 Kitem/s │ 50.28 Kitem/s │ 49.83 Kitem/s │         │
+//!    ╰─ 10000      107.8 ms      │ 151.4 ms      │ 118.6 ms      │ 119.8 ms      │ 100     │ 100
+//!                  92.74 Kitem/s │ 66.01 Kitem/s │ 84.29 Kitem/s │ 83.4 Kitem/s  │         │
+//! ```
+//!
+//! ## Audits
+//!
+//! | Auditor | Audit Date | Version | Vulnerabilities |
+//! | --- | --- | --- | --- |
+//! | [cargo-audit](https://crates.io/crates/cargo-audit) | 2026-10-29 | 0.1.0 | 0 |
+//!
+//! ## License
+//!
+//! This project is licensed under the [Mozilla Public License, version 2.0](https://www.mozilla.org/en-US/MPL/2.0/).
 
 mod error;
 mod fs;
