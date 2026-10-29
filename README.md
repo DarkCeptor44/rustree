@@ -60,10 +60,10 @@ render_tree(root, &root_map, false, "blue", true);
 
 | Command | Mean Wall Time [ms] | Change | Factor |
 | --- | --- | --- | --- |
-| `Windows tree` | 428.7 ± 4.5 | | |
-| `rustree (all)` | 1096.3 ± 5.9 | +155.7% | (2.6x slower) |
-| `rustree` | 1645.7 ± 7.1 | +283.9% | (3.8x slower) |
-| `rustree (with sizes)` | 1675.7 ± 5.6 | +290.9% | (3.9x slower) |
+| `Windows tree` | 469.3 ± 63.2 | | |
+| `rustree` | 641.3 ± 7.5 | +36.7% | (1.4x slower) |
+| `rustree (all)` | 666.7 ± 45.8 | +42.1% | (1.4x slower) |
+| `rustree (with sizes)` | 6292.6 ± 219.7 | +1240.9% | (13.4x slower) |
 
 ### Rustree Codebase
 
@@ -71,10 +71,10 @@ render_tree(root, &root_map, false, "blue", true);
 
 | Command | Mean Wall Time [ms] | Change | Factor |
 | --- | --- | --- | --- |
-| `Windows tree` | 14.0 ± 1.8 | | |
-| `rustree (with sizes)` | 17.8 ± 1.3 | +27.4% | |
-| `rustree (all)` | 18.4 ± 1.9 | +31.5% | (1.3x slower) |
-| `rustree` | 18.5 ± 2.2 | +32.1% | (1.3x slower) |
+| `rustree` | 14.7 ± 1.2 | -8.3% | |
+| `rustree (with sizes)` | 15.6 ± 1.6 | -2.2% | |
+| `Windows tree` | 16.0 ± 4.8 | | |
+| `rustree (all)` | 35.7 ± 1.4 | +123.1% | (2.2x slower) |
 
 ### Library Benchmarks
 
@@ -82,12 +82,12 @@ render_tree(root, &root_map, false, "blue", true);
 Timer precision: 100 ns
 fs               fastest       │ slowest       │ median        │ mean          │ samples │ iters
 ╰─ Walker::walk                │               │               │               │         │
-   ├─ 100        9.086 ms      │ 13.09 ms      │ 9.794 ms      │ 10.01 ms      │ 100     │ 100
-   │             11 Kitem/s    │ 7.637 Kitem/s │ 10.2 Kitem/s  │ 9.983 Kitem/s │         │
-   ├─ 500        45.89 ms      │ 63.79 ms      │ 47.85 ms      │ 48.48 ms      │ 100     │ 100
-   │             10.89 Kitem/s │ 7.838 Kitem/s │ 10.44 Kitem/s │ 10.31 Kitem/s │         │
-   ├─ 1000       84.57 ms      │ 116.2 ms      │ 87.87 ms      │ 89.13 ms      │ 100     │ 100
-   │             11.82 Kitem/s │ 8.605 Kitem/s │ 11.37 Kitem/s │ 11.21 Kitem/s │         │
-   ╰─ 10000      233.8 ms      │ 313.1 ms      │ 246 ms        │ 252.4 ms      │ 100     │ 100
-                 42.75 Kitem/s │ 31.93 Kitem/s │ 40.64 Kitem/s │ 39.6 Kitem/s  │         │
+   ├─ 100        2.933 ms      │ 4.09 ms       │ 3.063 ms      │ 3.16 ms       │ 100     │ 100
+   │             34.09 Kitem/s │ 24.44 Kitem/s │ 32.64 Kitem/s │ 31.63 Kitem/s │         │
+   ├─ 500        12.93 ms      │ 16.16 ms      │ 13.64 ms      │ 13.94 ms      │ 100     │ 100
+   │             38.65 Kitem/s │ 30.93 Kitem/s │ 36.63 Kitem/s │ 35.84 Kitem/s │         │
+   ├─ 1000       18.97 ms      │ 23.9 ms       │ 19.88 ms      │ 20.06 ms      │ 100     │ 100
+   │             52.7 Kitem/s  │ 41.82 Kitem/s │ 50.28 Kitem/s │ 49.83 Kitem/s │         │
+   ╰─ 10000      107.8 ms      │ 151.4 ms      │ 118.6 ms      │ 119.8 ms      │ 100     │ 100
+                 92.74 Kitem/s │ 66.01 Kitem/s │ 84.29 Kitem/s │ 83.4 Kitem/s  │         │
 ```
