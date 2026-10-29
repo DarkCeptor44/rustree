@@ -6,12 +6,15 @@ use std::{
     path::Path,
 };
 
+/// ASCII Tree Style
 pub const ASCII_STYLE: TreeStyle = TreeStyle {
     tee: "|-- ",
     last: "\\-- ",
     vertical: "|   ",
     space: "    ",
 };
+
+/// Unicode Tree Style
 pub const UNICODE_STYLE: TreeStyle = TreeStyle {
     tee: "├── ",
     last: "└── ",
@@ -19,6 +22,7 @@ pub const UNICODE_STYLE: TreeStyle = TreeStyle {
     space: "    ",
 };
 
+/// Tree style helper struct
 #[derive(Debug, Clone, Copy)]
 pub struct TreeStyle {
     tee: &'static str,
@@ -28,6 +32,19 @@ pub struct TreeStyle {
 }
 
 impl TreeStyle {
+    /// Prints a tree's node
+    ///
+    /// ## Arguments
+    ///
+    /// * `writer` - The writer to write to
+    /// * `children` - The tree or map with nodes to print
+    /// * `prefix` - The prefix to add to the node
+    /// * `color` - The color to use for the node, can be `off`, `blue` for blue, or hexcode (e.g. `#ff0000` for red)
+    /// * `show_size` - Whether to show the size of the node
+    ///
+    /// ## Panics
+    ///
+    /// Panics if the writer fails
     pub fn print_tree<W>(
         &self,
         writer: &mut W,
@@ -69,7 +86,17 @@ impl TreeStyle {
     }
 }
 
-fn human_bytes(bytes: u64) -> String {
+/// Converts bytes to a human readable string
+///
+/// ## Arguments
+///
+/// * `bytes` - The bytes to convert
+///
+/// ## Returns
+///
+/// The human readable string
+#[must_use]
+pub fn human_bytes(bytes: u64) -> String {
     const UNITS: &[&str] = &["B", "KB", "MB", "GB", "TB"];
 
     #[allow(clippy::cast_precision_loss)]
@@ -85,6 +112,19 @@ fn human_bytes(bytes: u64) -> String {
     format!("{bytes:.n$} {}", UNITS[idx])
 }
 
+/// Renders a tree to the terminal
+///
+/// ## Arguments
+///
+/// * `root_path` - The root path
+/// * `root_map` - The root tree
+/// * `use_ascii` - Whether to use ASCII characters
+/// * `color` - The color to use for the tree, can be `off`, `blue` for blue, or hexcode (e.g. `#ff0000` for red)
+/// * `show_size` - Whether to show the size of the files
+///
+/// ## Panics
+///
+/// Panics if the writer fails
 pub fn render_tree(
     root_path: &Path,
     root_map: &BTreeMap<String, Node>,

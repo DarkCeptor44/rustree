@@ -1,17 +1,11 @@
 #![forbid(unsafe_code)]
 #![warn(clippy::pedantic, missing_debug_implementations)]
 
-mod term;
-mod tree;
-
-use crate::{
-    term::render_tree,
-    tree::{Node, insert_entry},
-};
 use anyhow::{Result, anyhow};
 use clap::Parser;
 use colored::Colorize;
 use ignore::WalkBuilder;
+use rustree::{Node, insert_entry, render_tree};
 use std::{collections::BTreeMap, path::PathBuf, process::exit};
 
 const NAME: &str = env!("CARGO_BIN_NAME");

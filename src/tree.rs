@@ -5,24 +5,64 @@ use std::{
     path::{Component, Path},
 };
 
+/// Represents a file or directory
 #[derive(Debug)]
 pub enum Node {
-    File { size: Option<u64> },
-    Directory { children: BTreeMap<String, Node> },
+    /// Represents a file
+    File {
+        /// Potential size of the file, if available
+        size: Option<u64>,
+    },
+
+    /// Represents a directory
+    Directory {
+        /// Children of the directory
+        children: BTreeMap<String, Node>,
+    },
 }
 
 impl Node {
+    /// Creates a new directory
+    ///
+    /// ## Returns
+    ///
+    /// The new node
+    #[must_use]
     pub fn new_dir() -> Self {
         Self::Directory {
             children: BTreeMap::new(),
         }
     }
 
-    pub fn new_file(size: Option<u64>) -> Self {
-        Self::File { size }
+    //// Creates a new file
+    ///
+    /// ## Arguments
+    ///
+    /// * `size` - The size of the file, if available
+    ///
+    /// ## Returns
+    ///
+    /// The new node
+    pub fn new_file<T>(size: T) -> Self
+    where
+        T: Into<Option<u64>>,
+    {
+        fn inner(size: Option<u64>) -> Node {
+            Node::File { size }
+        }
+
+        inner(size.into())
     }
 }
 
+/// Inserts an entry into the tree
+///
+/// ## Arguments
+///
+/// * `root` - The root tree object
+/// * `root_path` - The root path
+/// * `entry` - The entry to insert
+/// * `calculate_size` - Whether to calculate the size of the files
 pub fn insert_entry(
     root: &mut BTreeMap<String, Node>,
     root_path: &Path,
