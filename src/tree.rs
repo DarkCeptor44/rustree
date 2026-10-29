@@ -1,4 +1,4 @@
-use ignore::DirEntry;
+use crate::{DirEntry, FileType};
 use std::{
     collections::BTreeMap,
     fs::Metadata,
@@ -89,9 +89,12 @@ pub fn insert_entry(
         return;
     }
 
-    let is_dir = entry.file_type().is_some_and(|ft| ft.is_dir());
+    let is_dir = entry
+        .file_type
+        .is_some_and(|ft| matches!(ft, FileType::Dir));
     let size = if calculate_size {
         entry
+            .path
             .metadata()
             .ok()
             .filter(Metadata::is_file)

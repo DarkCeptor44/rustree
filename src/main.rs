@@ -1,11 +1,9 @@
 #![forbid(unsafe_code)]
 #![warn(clippy::pedantic, missing_debug_implementations)]
 
-use anyhow::{Result, anyhow};
 use clap::Parser;
 use colored::Colorize;
-use ignore::WalkBuilder;
-use rustree::{Node, insert_entry, render_tree};
+use rustree::{Error, Node, Walker, insert_entry, render_tree};
 use std::{collections::BTreeMap, path::PathBuf, process::exit};
 
 const NAME: &str = env!("CARGO_BIN_NAME");
@@ -32,6 +30,14 @@ struct App {
 
     #[arg(short = 'l', long, help = "Show file sizes", default_value_t)]
     show_sizes: bool,
+
+    #[arg(
+        short,
+        long,
+        help = "Threshold at for parallelizing",
+        default_value_t = 100
+    )]
+    threshold: usize,
 }
 
 fn main() {
@@ -41,7 +47,7 @@ fn main() {
     }
 }
 
-fn main_impl() -> Result<()> {
+fn main_impl() -> Result<(), Error> {
     let args = App::parse();
     let App {
         path: root_path,
@@ -49,19 +55,17 @@ fn main_impl() -> Result<()> {
         ascii,
         color,
         show_sizes,
+        threshold,
     } = args;
 
     if !root_path.is_dir() {
-        return Err(anyhow!("path is not a directory: {}", root_path.display()));
+        return Err(Error::NotDir(root_path));
     }
 
     let mut root_map: BTreeMap<String, Node> = BTreeMap::new();
-    let walker = WalkBuilder::new(&root_path)
-        .git_ignore(!all)
-        .ignore(!all)
-        .build();
+    let entries = Walker::new(&root_path).threshold(threshold).all(all).walk();
 
-    for entry in walker.flatten() {
+    for entry in entries {
         insert_entry(&mut root_map, &root_path, &entry, show_sizes);
     }
 

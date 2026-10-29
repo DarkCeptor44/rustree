@@ -6,21 +6,28 @@ edition = "2024"
 rust-version = "1.88"
 
 [dependencies]
-anyhow = { version = "1.0.104", optional = true }
 clap = { version = "4.6.7", features = ["derive"], optional = true }
 colored = "3.1.1"
 ignore = { version = "0.4.34", features = ["simd-accel"] }
+parking_lot = "0.13.0"
+thiserror = "2.0.21"
 
 [dev-dependencies]
+divan = "0.1.21"
+tempfile = "3.27.0"
 
 [features]
 default = ["cli"]
-cli = ["dep:anyhow", "dep:clap"]
+cli = ["dep:clap"]
 
 [[bin]]
 name = "rustree"
 path = "src/main.rs"
 required-features = ["cli"]
+
+[[bench]]
+name = "fs"
+harness = false
 
 [package.metadata.docs.rs]
 all-features = true
